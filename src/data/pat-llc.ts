@@ -10,7 +10,7 @@ export const patLlc = {
     phone: '(XXX) XXX-XXXX',
   },
   links: {
-    calendlyIntro: 'https://calendly.com/pat-llc/intro',
+    calendlyIntro: 'https://calendly.com/patrickdrea223/30min',
     stripeTierA: 'https://buy.stripe.com/14AbJ1fSM2G1gON1mkbwk00',
     stripeTierB: 'https://buy.stripe.com/6oUeVd8qk5SddCBc0Ybwk01',
     stripeTierC: 'https://buy.stripe.com/bJe14ncGAcgB4214ywbwk02',
