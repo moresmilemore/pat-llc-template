@@ -6,8 +6,9 @@ export const patLlc = {
   brand: {
     name: 'Pat LLC',
     tagline: 'AI-built sites for small businesses, finished by hand.',
-    email: 'pat@patllc.com',
-    phone: '(XXX) XXX-XXXX',
+    email: 'patrickdrea223@gmail.com',
+    phone: '(732) 360-6408',
+    phoneTel: '+17323606408',
   },
   links: {
     calendlyIntro: 'https://calendly.com/patrickdrea223/30min',
