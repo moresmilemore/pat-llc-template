@@ -1,0 +1,289 @@
+---
+// Site audit page. Phase 4 fills the `findings` array from research artifacts.
+// The verified-vs-illustrative tag is LOAD-BEARING — only mark VERIFIED what was
+// actually observed on the live site fetch. Anything ILLUSTRATIVE is industry-typical
+// but not directly observed.
+
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { client } from '../data/client';
+
+type Severity = 'CRITICAL' | 'MODERATE' | 'MINOR';
+type Source = 'VERIFIED' | 'ILLUSTRATIVE';
+
+interface Finding {
+  id: string;
+  section: 'whats-outdated' | 'security-technical' | 'accessibility-seo';
+  severity: Severity;
+  source: Source;
+  title: string;
+  detail: string;
+  evidence?: string;     // URL or quote where the finding was observed
+}
+
+// Phase 4: replace placeholders with findings drawn from
+//   research/seo-audit.md, research/current-content-inventory.md, etc.
+const findings: Finding[] = [
+  {
+    id: 'F-001',
+    section: 'whats-outdated',
+    severity: 'CRITICAL',
+    source: 'VERIFIED',
+    title: '{{FINDING_1_TITLE}}',
+    detail: '{{FINDING_1_DETAIL}}',
+    evidence: '{{FINDING_1_EVIDENCE}}',
+  },
+  {
+    id: 'F-002',
+    section: 'security-technical',
+    severity: 'MODERATE',
+    source: 'VERIFIED',
+    title: '{{FINDING_2_TITLE}}',
+    detail: '{{FINDING_2_DETAIL}}',
+  },
+  {
+    id: 'F-003',
+    section: 'accessibility-seo',
+    severity: 'MODERATE',
+    source: 'VERIFIED',
+    title: '{{FINDING_3_TITLE}}',
+    detail: '{{FINDING_3_DETAIL}}',
+  },
+  // Phase 4 typically lands 6–12 findings.
+];
+
+interface ComparisonRow {
+  dimension: string;
+  current: string;
+  industryStandard: string;
+  proposed: string;
+}
+
+const comparison: ComparisonRow[] = [
+  { dimension: 'Mobile performance (Lighthouse)', current: '{{ROW_1_CURRENT}}', industryStandard: '≥85', proposed: '≥95' },
+  { dimension: 'LCP (mobile)', current: '{{ROW_2_CURRENT}}', industryStandard: '<2.5s', proposed: '<2.0s' },
+  { dimension: 'HTTPS', current: '{{ROW_3_CURRENT}}', industryStandard: 'Required', proposed: 'Enforced + HSTS' },
+  { dimension: 'Schema markup', current: '{{ROW_4_CURRENT}}', industryStandard: 'LocalBusiness + Service', proposed: 'LocalBusiness + Service + Review + AggregateRating + FAQPage' },
+  { dimension: 'Reviews on homepage', current: '{{ROW_5_CURRENT}}', industryStandard: '3 verbatim with attribution', proposed: '3 verbatim from Google + tile grid' },
+  { dimension: 'Tap-to-call mobile', current: '{{ROW_6_CURRENT}}', industryStandard: 'Above the fold', proposed: 'Sticky header + hero + footer' },
+  { dimension: 'Service-area coverage', current: '{{ROW_7_CURRENT}}', industryStandard: 'Listed in footer', proposed: 'Pill grid + per-area schema where appropriate' },
+  { dimension: 'Image optimization', current: '{{ROW_8_CURRENT}}', industryStandard: 'WebP/AVIF served', proposed: 'AVIF + responsive srcset + lazy loading' },
+  { dimension: 'WCAG AA compliance', current: '{{ROW_9_CURRENT}}', industryStandard: 'Required by ADA', proposed: 'Passes axe-core full suite' },
+  { dimension: 'Hosting + uptime', current: '{{ROW_10_CURRENT}}', industryStandard: 'Shared hosting, ~99.5%', proposed: 'Vercel edge, 99.99% with monitoring' },
+];
+
+const sections: Record<Finding['section'], string> = {
+  'whats-outdated': "What's outdated",
+  'security-technical': 'Security & technical',
+  'accessibility-seo': 'Accessibility & SEO',
+};
+
+function bySection(s: Finding['section']) {
+  return findings.filter((f) => f.section === s);
+}
+---
+
+<SiteLayout title={`${client.name} — Site Audit`} description="Independent audit of the existing site.">
+  <section class="audit-intro">
+    <p class="audit-intro__caption">SITE AUDIT</p>
+    <h1>What we found on {client.name}'s current site</h1>
+    <p class="audit-intro__lede">
+      Findings tagged <strong>VERIFIED</strong> were observed directly on the live site. Findings tagged
+      <strong>ILLUSTRATIVE</strong> are industry-typical patterns we'd check against on a fuller engagement,
+      but we have not directly verified them on this site yet.
+    </p>
+  </section>
+
+  {(['whats-outdated', 'security-technical', 'accessibility-seo'] as const).map((s) => (
+    <section class="audit-section">
+      <h2>{sections[s]}</h2>
+      <div class="finding-grid">
+        {bySection(s).map((f) => (
+          <article class="finding" data-severity={f.severity.toLowerCase()}>
+            <header class="finding__header">
+              <span class={`badge badge--${f.severity.toLowerCase()}`}>{f.severity}</span>
+              <span class={`tag tag--${f.source.toLowerCase()}`}>{f.source}</span>
+              <span class="finding__id">{f.id}</span>
+            </header>
+            <h3>{f.title}</h3>
+            <p>{f.detail}</p>
+            {f.evidence && <p class="finding__evidence">Evidence: <code>{f.evidence}</code></p>}
+          </article>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section class="comparison">
+    <h2>Current site vs. industry vs. proposed build</h2>
+    <div class="comparison__scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Dimension</th>
+            <th scope="col">Current site</th>
+            <th scope="col">Industry standard</th>
+            <th scope="col">Proposed build</th>
+          </tr>
+        </thead>
+        <tbody>
+          {comparison.map((row) => (
+            <tr>
+              <th scope="row">{row.dimension}</th>
+              <td>{row.current}</td>
+              <td>{row.industryStandard}</td>
+              <td>{row.proposed}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="next-step">
+    <p class="next-step__caption">NEXT STEP</p>
+    <h2>Want the full picture?</h2>
+    <p>The proposal page lays out exactly what gets fixed at each tier and what it costs.</p>
+    <a href="/proposal" class="cta cta--primary">See the proposal →</a>
+  </section>
+</SiteLayout>
+
+<style>
+  .audit-intro {
+    padding: var(--space-16) var(--space-6) var(--space-8);
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .audit-intro__caption,
+  .next-step__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 var(--space-3);
+  }
+  h1 { font-size: clamp(32px, 5vw, 52px); margin-bottom: var(--space-4); }
+  .audit-intro__lede { font-size: 17px; color: var(--ink-secondary); }
+
+  .audit-section {
+    padding: var(--space-8) var(--space-6);
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .audit-section h2 {
+    font-size: 26px;
+    margin-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: var(--space-3);
+  }
+
+  .finding-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-4);
+  }
+  .finding {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .finding__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .finding__id {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    margin-left: auto;
+  }
+  .finding h3 { font-size: 18px; margin-bottom: var(--space-2); }
+  .finding p { color: var(--ink-secondary); margin: 0 0 var(--space-2); }
+  .finding__evidence { font-size: 13px; color: var(--ink-mute); }
+  .finding__evidence code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--surface-warm);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .badge--critical { background: #FCE6E2; color: var(--error); }
+  .badge--moderate { background: #FFF1D6; color: #8A5800; }
+  .badge--minor    { background: var(--surface-warm); color: var(--ink-secondary); }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    color: var(--ink-mute);
+  }
+  .tag--verified { color: var(--success); border-color: #BFE5CC; background: #ECF7F0; }
+  .tag--illustrative { color: var(--ink-mute); }
+
+  .comparison {
+    padding: var(--space-8) var(--space-6);
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .comparison h2 { font-size: 26px; margin-bottom: var(--space-6); }
+  .comparison__scroll { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  thead th {
+    background: var(--surface-warm);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+  tbody th { font-weight: 600; color: var(--ink-primary); }
+
+  .next-step {
+    padding: var(--space-12) var(--space-6) var(--space-16);
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .next-step h2 { font-size: 32px; margin-bottom: var(--space-3); }
+  .next-step p { font-size: 17px; color: var(--ink-secondary); margin-bottom: var(--space-6); }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 22px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    font-weight: 500;
+    min-height: 44px;
+  }
+  .cta--primary { background: var(--primary); color: var(--surface); }
+  .cta--primary:hover { background: var(--primary-deep); color: var(--surface); }
+</style>

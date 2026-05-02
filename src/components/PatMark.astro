@@ -1,0 +1,51 @@
+---
+// Pat LLC brand mark. Four sizes: xs, sm, md, lg. Optional inverted variant
+// for use on dark backgrounds (e.g. proposal hero on navy).
+
+interface Props {
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  inverted?: boolean;
+  ariaLabel?: string;
+}
+
+const { size = 'md', inverted = false, ariaLabel = 'Pat LLC' } = Astro.props;
+
+const dims = {
+  xs: { w: 24, h: 24, font: 11, mark: 18 },
+  sm: { w: 32, h: 32, font: 13, mark: 24 },
+  md: { w: 48, h: 48, font: 16, mark: 36 },
+  lg: { w: 96, h: 96, font: 28, mark: 72 },
+}[size];
+
+const fill = inverted ? '#F5F2ED' : '#0E1E3F';
+const accent = inverted ? '#0D7C7F' : '#0D7C7F';
+---
+
+<svg
+  class={`pat-mark pat-mark--${size}`}
+  width={dims.w}
+  height={dims.w}
+  viewBox="0 0 96 96"
+  role="img"
+  aria-label={ariaLabel}
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect x="2" y="2" width="92" height="92" rx="14" fill={fill} />
+  <path
+    d="M28 70 V26 H50 a14 14 0 0 1 0 28 H40"
+    stroke={accent}
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <circle cx="68" cy="68" r="6" fill={accent} />
+</svg>
+
+<style>
+  .pat-mark {
+    display: inline-block;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+</style>

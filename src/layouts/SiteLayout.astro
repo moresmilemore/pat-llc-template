@@ -1,0 +1,277 @@
+---
+import { client } from '../data/client';
+import { patLlc } from '../data/pat-llc';
+import PatMark from '../components/PatMark.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  bodyClass?: '' | 'pat-page';   // 'pat-page' overlays Pat LLC palette (proposal page)
+  hideDemoBanner?: boolean;
+}
+
+const { title, description = '', bodyClass = '', hideDemoBanner = false } = Astro.props;
+const path = Astro.url.pathname;
+
+function isActive(target: string): boolean {
+  if (target === '/') return path === '/' || path === '';
+  return path.startsWith(target);
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.bunny.net/css?family=fraunces:500,500i,600,600i|inter-tight:400,500,600|jetbrains-mono:400&display=swap"
+    />
+  </head>
+
+  <body class={bodyClass}>
+    {!hideDemoBanner && (
+      <div class="demo-banner" role="status" aria-live="polite">
+        <span>This is a working prototype — not yet live. Built by Pat LLC for {client.name}.</span>
+        <button type="button" class="demo-banner__dismiss" aria-label="Dismiss banner">×</button>
+      </div>
+    )}
+
+    <header class="tab-nav">
+      <a href="/" class="tab-nav__brand">
+        <PatMark size="xs" />
+        <span>{client.name}</span>
+      </a>
+      <nav aria-label="Prototype sections">
+        <a href="/" class:list={['tab', isActive('/') && 'tab--active']}>Site Preview</a>
+        <a href="/audit" class:list={['tab', isActive('/audit') && 'tab--active']}>Site Audit</a>
+        <a href="/proposal" class:list={['tab', isActive('/proposal') && 'tab--active']}>Proposal</a>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__col">
+        <strong>{client.name}</strong>
+        <address>
+          {client.address.street}<br />
+          {client.address.city}, {client.address.region} {client.address.postalCode}
+        </address>
+      </div>
+      <div class="site-footer__col">
+        <strong>Contact</strong>
+        <a href={`tel:${client.phoneTel}`}>{client.phone}</a>
+        <a href={`mailto:${client.email}`}>{client.email}</a>
+        <span>{client.hours}</span>
+      </div>
+      <div class="site-footer__col">
+        <strong>Credentials</strong>
+        <span>License: {client.licenseNumber}</span>
+        <span>{client.insurance}</span>
+      </div>
+      <div class="site-footer__col site-footer__col--brand">
+        <PatMark size="sm" />
+        <span class="site-footer__by">Built by Pat LLC · <a href={`mailto:${patLlc.brand.email}`}>{patLlc.brand.email}</a></span>
+      </div>
+    </footer>
+
+    <script>
+      const banner = document.querySelector('.demo-banner');
+      const dismiss = document.querySelector('.demo-banner__dismiss');
+      dismiss?.addEventListener('click', () => banner?.remove());
+    </script>
+
+    <style is:global>
+      :root {
+        --primary: #0E1E3F;
+        --primary-deep: #061330;
+        --accent: #0D7C7F;
+        --accent-deep: #0A6063;
+        --ink-primary: #161513;
+        --ink-secondary: #3A3733;
+        --ink-mute: #6B6864;
+        --surface: #FFFFFF;
+        --surface-warm: #F5F2ED;
+        --surface-inverse: #0E1E3F;
+        --border-subtle: #E5E1DA;
+        --error: #B42318;
+        --success: #0F7A3C;
+
+        --font-display: 'Fraunces', Georgia, serif;
+        --font-body: 'Inter Tight', system-ui, -apple-system, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-6: 24px;
+        --space-8: 32px;
+        --space-12: 48px;
+        --space-16: 64px;
+        --space-24: 96px;
+
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 16px;
+        --radius-pill: 999px;
+
+        --duration-fast: 200ms;
+        --duration-med: 300ms;
+        --easing: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      /* Pat LLC palette overlay — used on /proposal page only. */
+      body.pat-page {
+        --primary: #0E1E3F;
+        --accent: #0D7C7F;
+        --surface-warm: #F5F2ED;
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+
+      html { -webkit-text-size-adjust: 100%; }
+
+      body {
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.55;
+        color: var(--ink-primary);
+        background: var(--surface);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1, h2, h3, h4 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        line-height: 1.15;
+        margin: 0;
+        color: var(--ink-primary);
+      }
+
+      a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+      a:hover { color: var(--accent-deep); }
+
+      img, svg { max-width: 100%; height: auto; display: block; }
+
+      .demo-banner {
+        background: var(--primary);
+        color: var(--surface-warm);
+        padding: var(--space-3) var(--space-6);
+        font-size: 14px;
+        text-align: center;
+        position: relative;
+      }
+      .demo-banner__dismiss {
+        position: absolute;
+        right: var(--space-3);
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: inherit;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+        padding: var(--space-2);
+      }
+
+      .tab-nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: var(--space-6);
+        padding: var(--space-3) var(--space-6);
+      }
+      .tab-nav__brand {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 18px;
+        color: var(--ink-primary);
+        text-decoration: none;
+      }
+      .tab-nav nav {
+        display: flex;
+        gap: var(--space-2);
+        margin-left: auto;
+      }
+      .tab {
+        padding: 8px 14px;
+        border-radius: var(--radius-pill);
+        text-decoration: none;
+        color: var(--ink-secondary);
+        font-size: 14px;
+        font-weight: 500;
+        transition: background var(--duration-fast) var(--easing), color var(--duration-fast) var(--easing);
+      }
+      .tab:hover { background: var(--surface-warm); color: var(--ink-primary); }
+      .tab--active { background: var(--primary); color: var(--surface); }
+      .tab--active:hover { background: var(--primary-deep); color: var(--surface); }
+
+      main { min-height: 60vh; }
+
+      .site-footer {
+        background: var(--surface-warm);
+        padding: var(--space-12) var(--space-6) var(--space-8);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-8);
+        font-size: 14px;
+        color: var(--ink-secondary);
+        border-top: 1px solid var(--border-subtle);
+      }
+      .site-footer__col { display: flex; flex-direction: column; gap: var(--space-2); }
+      .site-footer__col strong {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-mute);
+        font-weight: 500;
+      }
+      .site-footer__col address { font-style: normal; }
+      .site-footer__col a { color: var(--ink-primary); }
+      .site-footer__col--brand { gap: var(--space-3); }
+      .site-footer__by { font-size: 12px; color: var(--ink-mute); }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
+
+      @media (max-width: 768px) {
+        .tab-nav { padding: var(--space-3); gap: var(--space-3); }
+        .tab-nav nav { gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+        .tab { padding: 6px 10px; font-size: 13px; }
+        .site-footer { grid-template-columns: 1fr; padding: var(--space-8) var(--space-4); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </body>
+</html>

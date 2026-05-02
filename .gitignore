@@ -1,0 +1,31 @@
+# build
+dist/
+.astro/
+
+# env
+.env
+.env.*
+!.env.example
+
+# deps
+node_modules/
+
+# editors
+.DS_Store
+.vscode/
+.idea/
+
+# secrets — never commit
+*.pem
+*.key
+credentials.json
+secrets/
+
+# vercel
+.vercel/
+
+# local QA artifacts
+qa/screenshots/
+qa/lighthouse-*.json
+qa/axe-*.json
+qa/console-*.log

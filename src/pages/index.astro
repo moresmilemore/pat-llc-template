@@ -1,0 +1,97 @@
+---
+// Homepage stub. Phase 4 of the engagement replaces this with the
+// chosen visual direction's full hero + services grid + reviews + footer.
+// This stub exists so `npm run build` succeeds before the per-client build.
+
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { client } from '../data/client';
+---
+
+<SiteLayout title={`${client.name} — Site Preview`} description="Modernized site preview built by Pat LLC.">
+  <section class="hero">
+    <p class="hero__caption">SITE PREVIEW · PHASE 4 BUILD TARGET</p>
+    <h1>{client.name}</h1>
+    <p class="hero__lede">
+      This homepage is a placeholder. The Phase 4 build replaces it with the chosen visual direction's hero composition,
+      services grid, reviews, and footer. Run the Ultra-Prompt in `KICKOFF_PROMPT.md` to begin.
+    </p>
+    <div class="hero__cta-row">
+      <a href={`tel:${client.phoneTel}`} class="cta cta--primary">Call {client.phone}</a>
+      <a href="/audit" class="cta cta--ghost">See the audit →</a>
+    </div>
+  </section>
+
+  <section class="phase4-checklist">
+    <h2>What goes here at Phase 4</h2>
+    <ul>
+      <li>Hero composition matching <code>design/04-direction-{`{`}A|B|C{`}`}.md</code></li>
+      <li>Services grid (3-col desktop / 2-col tablet / 1-col mobile) sourced from <code>src/data/services.ts</code></li>
+      <li>Three verbatim reviews from <code>research/reputation-harvest.md</code> with attribution</li>
+      <li>Real-work + brands gallery (mix of authentic client photos + labeled manufacturer shots)</li>
+      <li>4-step process</li>
+      <li>Service-area pills</li>
+    </ul>
+  </section>
+</SiteLayout>
+
+<style>
+  .hero {
+    padding: var(--space-16) var(--space-6);
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .hero__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 var(--space-4);
+  }
+  h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    margin-bottom: var(--space-4);
+  }
+  .hero__lede {
+    font-size: 18px;
+    color: var(--ink-secondary);
+    max-width: 640px;
+    margin: 0 auto var(--space-8);
+  }
+  .hero__cta-row {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    font-weight: 500;
+    min-height: 44px;
+  }
+  .cta--primary { background: var(--primary); color: var(--surface); }
+  .cta--primary:hover { background: var(--primary-deep); color: var(--surface); }
+  .cta--ghost { background: transparent; color: var(--ink-primary); border: 1px solid var(--border-subtle); }
+  .cta--ghost:hover { background: var(--surface-warm); }
+
+  .phase4-checklist {
+    padding: var(--space-12) var(--space-6);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .phase4-checklist h2 { font-size: 24px; margin-bottom: var(--space-4); }
+  .phase4-checklist ul { padding-left: var(--space-6); color: var(--ink-secondary); }
+  .phase4-checklist li { margin-bottom: var(--space-2); }
+  code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface-warm);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+</style>

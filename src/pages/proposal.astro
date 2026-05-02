@@ -1,0 +1,404 @@
+---
+// Proposal page. Pat LLC branding (navy + teal palette via body.pat-page).
+// Pricing tiers are LOCKED — do not relitigate per client.
+
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PatMark from '../components/PatMark.astro';
+import { client } from '../data/client';
+import { patLlc } from '../data/pat-llc';
+
+interface Tier {
+  id: 'A' | 'B' | 'C';
+  name: string;
+  setup: number;
+  monthly: number | null;
+  highlight: boolean;
+  oneLine: string;
+  inclusions: string[];
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+const tiers: Tier[] = [
+  {
+    id: 'A',
+    name: 'Site Refresh',
+    setup: 1495,
+    monthly: null,
+    highlight: false,
+    oneLine: 'One-time rebuild. Hand-off to you.',
+    inclusions: [
+      'Modern rebuild on Astro + Vercel',
+      '30-day post-launch support',
+      'Hand-off to client (you own the code)',
+      'Schema markup + sitemap + redirect map applied',
+    ],
+    ctaLabel: 'Pay deposit · $1,495',
+    ctaHref: patLlc.links.stripeTierA,
+  },
+  {
+    id: 'B',
+    name: 'Site + Care',
+    setup: 1995,
+    monthly: 149,
+    highlight: true,
+    oneLine: 'Most popular. Setup + ongoing care.',
+    inclusions: [
+      'Everything in Site Refresh',
+      'Monthly content updates (4 hrs, rolls 8 weeks)',
+      'Hosting + uptime monitoring',
+      'Quarterly SEO check-in',
+      'Email response within 1 business day',
+      'Annual visual refresh',
+    ],
+    ctaLabel: 'Reserve Tier B · $500 deposit',
+    ctaHref: patLlc.links.stripeTierB,
+  },
+  {
+    id: 'C',
+    name: 'Growth Partner',
+    setup: 2495,
+    monthly: 399,
+    highlight: false,
+    oneLine: 'Active SEO + iteration + ad-campaign landing pages.',
+    inclusions: [
+      'Everything in Site + Care',
+      'Active local SEO',
+      'Monthly 30-min performance call',
+      'A/B testing on key paths',
+      'Quarterly design iteration',
+      'Custom landing pages for ad campaigns',
+    ],
+    ctaLabel: 'Reserve Tier C · $500 deposit',
+    ctaHref: patLlc.links.stripeTierC,
+  },
+];
+
+const deliverables: Array<{ title: string; detail: string }> = [
+  { title: 'Modernized homepage', detail: 'Hero, services grid, verbatim Google reviews, real-work gallery, 4-step process, footer with NAP.' },
+  { title: 'Per-service detail pages', detail: 'Individual page per service with trust signals, content body, related-service grid.' },
+  { title: 'Site audit', detail: 'Severity-badged findings + 10-row comparison: current vs. industry vs. proposed.' },
+  { title: 'Schema markup', detail: 'LocalBusiness + Service + Review + AggregateRating + FAQPage JSON-LD.' },
+  { title: '301 redirect map', detail: 'Every old URL mapped to new URL — no SEO leak on launch.' },
+  { title: 'Mobile-first design', detail: 'Tap-to-call + tap-to-text in the hero. Touch targets ≥44px. Lighthouse mobile ≥90.' },
+  { title: 'Performance budget', detail: 'LCP <2.0s mobile, CLS <0.05, INP <150ms. First-load <500KB.' },
+  { title: 'Accessibility', detail: 'WCAG AA contrast, alt text, keyboard reachability, ARIA landmarks.' },
+  { title: 'Deployed prototype', detail: 'Live Vercel URL within 1–2 days. Yours to share with anyone you want input from.' },
+];
+
+const faq: Array<{ q: string; a: string }> = [
+  {
+    q: 'How fast is this?',
+    a: 'You see a deployed prototype within 1–2 days of agreeing to start. Final launch — depending on tier and content — is typically within 1–3 weeks.',
+  },
+  {
+    q: 'What does Pat LLC do that an agency does not?',
+    a: 'Every tier includes a modern rebuild — Pat does the work AI handles best, then handles the rest personally. No agency overhead, no junior staff, no surprise hourly bills. Pricing reflects that. For context: typical agency engagement starts at $3,600/year. Pat LLC Site + Care delivers more for $1,788/year + $1,995 setup.',
+  },
+  {
+    q: 'Who do I email if something breaks?',
+    a: `${patLlc.brand.email}. Tier B and C include an email response within 1 business day. Tier A includes 30 days of post-launch support, then hand-off to you or your developer.`,
+  },
+  {
+    q: 'Do you do e-commerce / portals / custom backends?',
+    a: 'No. Pat LLC focuses on small-business websites — service trades, local single-location businesses, owner-operator shops. If you need a checkout, member portal, or custom backend, I can recommend agencies that fit those builds.',
+  },
+  {
+    q: 'What happens if I want to leave Tier B or C later?',
+    a: "You own the code from day one. Cancel any time and I'll hand off your deployment. No buyout, no lock-in.",
+  },
+  {
+    q: 'Will my Google ranking survive the rebuild?',
+    a: "Yes — that's what the 301 redirect map is for. Every URL on the existing site maps to its replacement on the new site. Schema and meta improve. In most cases, ranking improves rather than dropping.",
+  },
+  {
+    q: 'Why is Pat LLC priced lower than other agencies?',
+    a: 'Agencies built their pricing around full-time designers, account managers, and project leads. Pat LLC is one operator using AI to do what teams used to do. The work is the same; the overhead is not.',
+  },
+];
+
+const introParas: string[] = [
+  `Hi ${client.name} — thanks for letting me dig into your current site. The audit on the previous tab lays out exactly what I found.`,
+  `This proposal is my recommendation for what a modern rebuild should look like. Three tiers below, each with locked pricing — no surprise hourly bills, no agency overhead. Most clients pick Tier B (Site + Care). If you're starting an ad campaign or want active SEO, Tier C is the call.`,
+  `If anything below isn't right for your business, tell me and I'll revise. Otherwise, the deposit links go straight to Stripe and the schedule link goes to my Calendly.`,
+];
+---
+
+<SiteLayout
+  title={`Pat LLC — Proposal for ${client.name}`}
+  description="Three-tier proposal from Pat LLC."
+  bodyClass="pat-page"
+>
+  <section class="proposal-hero">
+    <div class="proposal-hero__inner">
+      <PatMark size="lg" />
+      <p class="proposal-hero__caption">PROPOSAL</p>
+      <h1>{client.name}, here's what I'd build.</h1>
+      {introParas.map((p) => <p class="proposal-hero__lede">{p}</p>)}
+    </div>
+  </section>
+
+  <section class="deliverables">
+    <h2>What you get at every tier</h2>
+    <ol class="deliverables__list">
+      {deliverables.map((d, i) => (
+        <li>
+          <span class="deliverables__num">{String(i + 1).padStart(2, '0')}</span>
+          <div>
+            <h3>{d.title}</h3>
+            <p>{d.detail}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="tiers">
+    <h2>Pricing</h2>
+    <p class="tiers__compare">
+      For context: typical agency engagement starts at <strong>${patLlc.comparison.typicalAgencyAnnualFloor.toLocaleString()}/year</strong>.
+      Pat LLC Site + Care delivers more for $1,788/year + $1,995 setup.
+    </p>
+
+    <div class="tiers__grid">
+      {tiers.map((t) => (
+        <article class:list={['tier', t.highlight && 'tier--highlight']}>
+          {t.highlight && <span class="tier__badge">Most popular</span>}
+          <h3>{t.name}</h3>
+          <p class="tier__price">
+            <span class="tier__price-setup">${t.setup.toLocaleString()}</span>
+            <span class="tier__price-meta">{t.monthly ? `setup · then $${t.monthly}/mo` : 'one-time · no monthly'}</span>
+          </p>
+          <p class="tier__one-line">{t.oneLine}</p>
+          <ul>
+            {t.inclusions.map((i) => <li>{i}</li>)}
+          </ul>
+          <a href={t.ctaHref} class:list={['tier__cta', t.highlight && 'tier__cta--highlight']}>{t.ctaLabel}</a>
+        </article>
+      ))}
+    </div>
+
+    <div class="tiers__or">
+      <span>or</span>
+    </div>
+
+    <div class="schedule">
+      <h3>Want to talk first?</h3>
+      <p>30 minutes, no pitch. Book a slot and we'll go through the audit + tiers together.</p>
+      <a href={patLlc.links.calendlyIntro} class="schedule__cta">Schedule a call →</a>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Questions</h2>
+    <div class="faq__list">
+      {faq.map((f) => (
+        <details>
+          <summary>{f.q}</summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</SiteLayout>
+
+<style>
+  .proposal-hero {
+    background: var(--primary);
+    color: var(--surface-warm);
+    padding: var(--space-16) var(--space-6);
+  }
+  .proposal-hero__inner {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .proposal-hero__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: var(--space-6) 0 var(--space-3);
+    color: #B7CDE0;
+  }
+  .proposal-hero h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    color: var(--surface-warm);
+    margin-bottom: var(--space-6);
+  }
+  .proposal-hero__lede {
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 var(--space-3);
+    max-width: 720px;
+  }
+
+  section { padding: var(--space-12) var(--space-6); max-width: 1120px; margin: 0 auto; }
+  section h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: var(--space-8); }
+
+  .deliverables__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-6);
+  }
+  .deliverables__list li {
+    display: flex;
+    gap: var(--space-4);
+  }
+  .deliverables__num {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .deliverables__list h3 { font-size: 18px; margin-bottom: var(--space-2); }
+  .deliverables__list p { color: var(--ink-secondary); margin: 0; }
+
+  .tiers__compare {
+    font-size: 15px;
+    color: var(--ink-secondary);
+    margin: -32px 0 var(--space-8);
+    max-width: 720px;
+  }
+  .tiers__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+  .tier {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .tier--highlight {
+    border-color: var(--accent);
+    box-shadow: 0 8px 32px -16px rgba(13, 124, 127, 0.4);
+  }
+  .tier__badge {
+    position: absolute;
+    top: -12px;
+    left: var(--space-6);
+    background: var(--accent);
+    color: var(--surface);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+  }
+  .tier h3 { font-size: 24px; margin-bottom: var(--space-3); }
+  .tier__price { display: flex; flex-direction: column; gap: 2px; margin: 0 0 var(--space-3); }
+  .tier__price-setup { font-family: var(--font-display); font-size: 36px; font-weight: 600; color: var(--ink-primary); }
+  .tier__price-meta { font-size: 13px; color: var(--ink-mute); }
+  .tier__one-line { color: var(--ink-secondary); margin: 0 0 var(--space-4); }
+  .tier ul { list-style: none; padding: 0; margin: 0 0 var(--space-6); flex: 1; }
+  .tier ul li {
+    padding: var(--space-2) 0;
+    padding-left: var(--space-6);
+    position: relative;
+    color: var(--ink-secondary);
+    font-size: 15px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .tier ul li:first-child { border-top: none; }
+  .tier ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .tier__cta {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    font-weight: 500;
+    min-height: 44px;
+    background: var(--surface-warm);
+    color: var(--ink-primary);
+  }
+  .tier__cta:hover { background: var(--primary); color: var(--surface); }
+  .tier__cta--highlight { background: var(--accent); color: var(--surface); }
+  .tier__cta--highlight:hover { background: var(--accent-deep); color: var(--surface); }
+
+  .tiers__or {
+    display: flex;
+    justify-content: center;
+    margin: var(--space-8) 0 var(--space-6);
+    color: var(--ink-mute);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .tiers__or span {
+    background: var(--surface);
+    padding: 0 var(--space-3);
+    position: relative;
+  }
+  .tiers__or::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-subtle);
+    z-index: -1;
+  }
+  .tiers__or { position: relative; }
+
+  .schedule {
+    text-align: center;
+    padding: var(--space-8);
+    background: var(--surface-warm);
+    border-radius: var(--radius-lg);
+  }
+  .schedule h3 { font-size: 24px; margin-bottom: var(--space-3); }
+  .schedule p { color: var(--ink-secondary); margin: 0 0 var(--space-6); }
+  .schedule__cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 22px;
+    border-radius: var(--radius-pill);
+    background: var(--primary);
+    color: var(--surface);
+    text-decoration: none;
+    font-weight: 500;
+    min-height: 44px;
+  }
+  .schedule__cta:hover { background: var(--primary-deep); color: var(--surface); }
+
+  .faq__list { display: flex; flex-direction: column; gap: var(--space-2); }
+  details {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+  }
+  details[open] { background: var(--surface-warm); }
+  summary {
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 16px;
+    list-style: none;
+  }
+  summary::after {
+    content: '+';
+    float: right;
+    color: var(--accent);
+    font-size: 22px;
+    line-height: 1;
+  }
+  details[open] summary::after { content: '−'; }
+  details p { margin: var(--space-3) 0 0; color: var(--ink-secondary); font-size: 15px; }
+</style>
