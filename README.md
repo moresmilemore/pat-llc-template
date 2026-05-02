@@ -3,7 +3,7 @@
 Template repo for Pat LLC client engagements. Spawn a per-client repo from this with:
 
 ```bash
-gh repo create --template pat-llc/pat-llc-template clients/{client-slug}
+gh repo create --template moresmilemore/pat-llc-template clients/{client-slug}
 cd clients/{client-slug}
 ```
 
@@ -52,8 +52,8 @@ Before client #1, replace placeholders in `src/data/pat-llc.ts`:
 Then push this template to GitHub and mark it as a template:
 
 ```bash
-gh repo create pat-llc/pat-llc-template --source=. --public --push
-gh repo edit pat-llc/pat-llc-template --template
+gh repo create moresmilemore/pat-llc-template --source=. --public --push
+gh repo edit moresmilemore/pat-llc-template --template
 ```
 
 ## Dev
