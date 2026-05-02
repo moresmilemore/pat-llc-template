@@ -11,9 +11,9 @@ export const patLlc = {
   },
   links: {
     calendlyIntro: 'https://calendly.com/pat-llc/intro',
-    stripeTierA: 'https://buy.stripe.com/REPLACE_TIER_A',
-    stripeTierB: 'https://buy.stripe.com/REPLACE_TIER_B_DEPOSIT',
-    stripeTierC: 'https://buy.stripe.com/REPLACE_TIER_C_DEPOSIT',
+    stripeTierA: 'https://buy.stripe.com/14AbJ1fSM2G1gON1mkbwk00',
+    stripeTierB: 'https://buy.stripe.com/6oUeVd8qk5SddCBc0Ybwk01',
+    stripeTierC: 'https://buy.stripe.com/bJe14ncGAcgB4214ywbwk02',
   },
   comparison: {
     typicalAgencyAnnualFloor: 3600,
