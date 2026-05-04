@@ -70,14 +70,16 @@ async function ensurePreviewServer() {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   child.unref();
-  for (let i = 0; i < 60; i++) {
+  // 60s wait, polling every 500ms = 120 attempts. First runs after npm install
+  // can be slow as Node hydrates module cache.
+  for (let i = 0; i < 120; i++) {
     if (isReachable(URL)) {
       log(`Preview server ready at ${URL}`);
       return child.pid;
     }
     await sleep(500);
   }
-  warn(`Preview server did not become ready within 30s.`);
+  warn(`Preview server did not become ready within 60s. Subsequent network checks will fail; investigate manually with 'npm run preview'.`);
   return child.pid;
 }
 

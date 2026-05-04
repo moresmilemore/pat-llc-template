@@ -1,0 +1,261 @@
+---
+// Component showcase. Renders every production component with sample data
+// so Pat (and the designer agent) can visually review the kit before each
+// engagement. Carries `noindex` from SiteLayout, so it doesn't ship publicly.
+//
+// To remove this page from production builds before client launch:
+//   delete src/pages/dev/
+
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Hero from '../../components/Hero.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import ServiceGrid from '../../components/ServiceGrid.astro';
+import ReviewTile from '../../components/ReviewTile.astro';
+import ReviewsBlock from '../../components/ReviewsBlock.astro';
+import AreaPills from '../../components/AreaPills.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import FaqList from '../../components/FaqList.astro';
+import ContactForm from '../../components/ContactForm.astro';
+import AuditFindingCard from '../../components/AuditFindingCard.astro';
+import ComparisonTable from '../../components/ComparisonTable.astro';
+
+const sampleServices = [
+  { slug: 'drain-cleaning', name: 'Drain cleaning', shortDescription: 'Hydro-jet + camera inspection. Same-day service in most cases.', body: '', related: [] },
+  { slug: 'water-heater', name: 'Water heater repair', shortDescription: 'Tank + tankless. Authorized installer for Bradford White and Rinnai.', body: '', related: [] },
+  { slug: 'leak-detection', name: 'Leak detection', shortDescription: 'Acoustic + thermal imaging — no demo unless we find it.', body: '', related: [] },
+];
+
+const sampleReviews = [
+  {
+    text: 'Mike showed up an hour after I called. Fixed the leak under my sink in 20 minutes and didn\'t try to upsell anything. This is who you call.',
+    rating: 5 as const,
+    author: 'Jennifer R.',
+    date: '2024-11-12',
+    platform: 'Google' as const,
+  },
+  {
+    text: "Honest pricing, on time, cleaned up after themselves. Will use again.",
+    rating: 5 as const,
+    author: 'David T.',
+    date: '2024-10-03',
+    platform: 'Google' as const,
+  },
+  {
+    text: 'Saved me thousands by finding a slab leak before my floor was destroyed.',
+    rating: 5 as const,
+    author: 'Sarah M.',
+    date: '2024-08-29',
+    platform: 'Yelp' as const,
+  },
+];
+
+const sampleSteps = [
+  { number: 1, title: 'Call or text', description: 'Reach the owner, not a call center.' },
+  { number: 2, title: 'On-site quote', description: 'Free, with a written estimate before any work.' },
+  { number: 3, title: 'Scheduled job', description: 'Show-up window narrowed to the half-day.' },
+  { number: 4, title: 'Done right', description: 'Workmanship guarantee on every job.' },
+];
+
+const sampleFaqs = [
+  { q: 'Do you charge for estimates?', a: 'No. On-site estimates are free. We give you a written quote before any work begins.' },
+  { q: 'How fast can you come out?', a: 'Most calls get same-day or next-day service. Emergency leak situations get prioritized.' },
+  { q: 'Are you licensed and insured?', a: 'Yes — license #PL-12345, fully insured and bonded. Documentation available on request.' },
+];
+
+const sampleSignals = [
+  { label: 'Licensed', value: '#PL-12345', icon: 'shield-check' },
+  { label: 'Insured', value: 'Bonded', icon: 'umbrella' },
+  { label: 'BBB', value: 'A+ rated', icon: 'badge-check' },
+  { label: 'Since', value: '1987', icon: 'calendar' },
+];
+
+const sampleFindings = [
+  {
+    id: 'F-001',
+    severity: 'CRITICAL' as const,
+    source: 'VERIFIED' as const,
+    title: 'Hero contains conflicting calls to action',
+    detail: 'The current hero has three primary CTAs at equal weight, splitting attention.',
+    evidence: 'observed at homepage hero',
+  },
+  {
+    id: 'F-002',
+    severity: 'MODERATE' as const,
+    source: 'VERIFIED' as const,
+    title: 'No schema.org LocalBusiness markup',
+    detail: 'Reduces eligibility for rich results in Google search.',
+  },
+  {
+    id: 'F-003',
+    severity: 'MINOR' as const,
+    source: 'ILLUSTRATIVE' as const,
+    title: 'Color contrast below AA on small captions',
+    detail: 'Industry-typical issue; should be verified with axe-core during full audit.',
+  },
+];
+
+const sampleComparison = [
+  { dimension: 'Mobile Lighthouse score', current: '54', industryStandard: '≥85', proposed: '≥95' },
+  { dimension: 'LCP', current: '4.8s', industryStandard: '<2.5s', proposed: '<2.0s' },
+  { dimension: 'Schema markup', current: 'None', industryStandard: 'LocalBusiness', proposed: 'LocalBusiness + Service + Review + FAQPage' },
+];
+---
+
+<SiteLayout title="Component showcase — Pat LLC template" description="Visual review of every production component.">
+  <section class="showcase-intro">
+    <p class="showcase-intro__caption">DEV / COMPONENT SHOWCASE</p>
+    <h1>Pat LLC component kit</h1>
+    <p class="showcase-intro__lede">
+      Every production component rendered with sample data. Use this page during Phase 2 direction proposals
+      (designer agent loads <code>design-system</code> + <code>frontend-design</code> skills against this) and
+      during Phase 6 QA (visual regression spot-check). Carries <code>noindex</code>; never shipped to clients.
+    </p>
+  </section>
+
+  <div class="showcase-section">
+    <h2>Hero — split variant</h2>
+    <Hero
+      variant="split"
+      caption="PLUMBING"
+      headline="Showtime plumbing."
+      lede="Family-run since 1987. Real owner picks up. Same-day service across Greater Springfield."
+      ctas={[
+        { label: 'Call (555) 123-4567', href: 'tel:+15551234567', variant: 'primary' },
+        { label: 'See the audit →', href: '/audit', variant: 'ghost' },
+      ]}
+    />
+  </div>
+
+  <div class="showcase-section">
+    <h2>Hero — centered variant</h2>
+    <Hero
+      variant="centered"
+      caption="ESTABLISHED 1987"
+      headline="Plumbing that doesn't sound like an ad."
+      lede="Two trucks. Three trades. Forty years of names you'd recognize from the neighborhood."
+      ctas={[{ label: 'Get a free quote', href: '#contact', variant: 'primary' }]}
+    />
+  </div>
+
+  <div class="showcase-section">
+    <h2>TrustStrip</h2>
+    <TrustStrip signals={sampleSignals} variant="full" />
+  </div>
+
+  <div class="showcase-section">
+    <h2>ServiceGrid (composes ServiceCard)</h2>
+    <ServiceGrid services={sampleServices} heading="Services" caption="WHAT WE DO" />
+  </div>
+
+  <div class="showcase-section">
+    <h2>ProcessSteps</h2>
+    <ProcessSteps steps={sampleSteps} heading="How it works" caption="PROCESS" />
+  </div>
+
+  <div class="showcase-section">
+    <h2>ReviewsBlock (composes ReviewTile)</h2>
+    <ReviewsBlock
+      reviews={sampleReviews}
+      heading="What customers say"
+      caption="REVIEWS"
+      reviewSourceUrl="https://www.google.com/maps"
+      reviewCount={147}
+      averageRating={4.9}
+    />
+  </div>
+
+  <div class="showcase-section">
+    <h2>AreaPills</h2>
+    <AreaPills
+      areas={['Springfield', 'Decatur', 'Champaign', 'Bloomington', 'Peoria', 'Jacksonville']}
+      serviceArea="Greater Springfield, IL"
+    />
+  </div>
+
+  <div class="showcase-section">
+    <h2>FaqList (with FAQPage schema)</h2>
+    <FaqList faqs={sampleFaqs} heading="Frequently asked" />
+  </div>
+
+  <div class="showcase-section">
+    <h2>AuditFindingCard (3 severities + sources)</h2>
+    <div class="showcase-grid">
+      {sampleFindings.map((f) => (
+        <AuditFindingCard {...f} />
+      ))}
+    </div>
+  </div>
+
+  <div class="showcase-section">
+    <h2>ComparisonTable</h2>
+    <ComparisonTable rows={sampleComparison} />
+  </div>
+
+  <div class="showcase-section" id="contact">
+    <h2>ContactForm (Resend + Turnstile-ready)</h2>
+    <ContactForm
+      heading="Tell us about the job"
+      caption="GET IN TOUCH"
+      useEmail={true}
+    />
+  </div>
+</SiteLayout>
+
+<style>
+  .showcase-intro {
+    padding: var(--space-12) var(--space-6) var(--space-4);
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .showcase-intro__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 var(--space-2);
+  }
+  .showcase-intro h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    margin: 0 0 var(--space-4);
+  }
+  .showcase-intro__lede {
+    color: var(--ink-secondary);
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .showcase-intro code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface-warm);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+  .showcase-section {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: var(--space-8);
+  }
+  .showcase-section > h2 {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    padding: 0 var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto var(--space-2);
+  }
+  .showcase-grid {
+    padding: var(--space-4) var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 768px) {
+    .showcase-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

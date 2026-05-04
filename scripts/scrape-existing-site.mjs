@@ -19,20 +19,28 @@
 //   - ALL forms detected
 //
 // Crawl scope:
-//   Depth-limited BFS from the seed URL. Default: 25 pages, depth 3.
-//   Stays within the seed origin. Skips anchors, mailto:, tel:, javascript:.
+//   Depth-limited BFS from the seed URL. Default: 100 pages, depth 5
+//   — covers virtually every service-trade business site end-to-end.
+//   Stays within the seed origin (subdomains require per-location URLs).
+//   Skips anchors, mailto:, tel:, javascript:, common asset extensions.
 //   Respects robots.txt for the agent named in USER_AGENT.
+//
+// For unusually large sites or when you want absolutely everything:
+//   MAX_PAGES=500 MAX_DEPTH=10 URL=... node scripts/scrape-existing-site.mjs
+// The cap exists to prevent runaway crawls on sites with infinite URL spaces
+// (paginated archives, calendars, search-result links).
 
 import { writeFileSync, mkdirSync } from 'node:fs';
 
 const SEED = process.env.URL;
 if (!SEED) {
   console.error('Usage: URL=https://example.com node scripts/scrape-existing-site.mjs');
+  console.error('Optional: MAX_PAGES=200 MAX_DEPTH=8 (defaults: 100 / 5)');
   process.exit(2);
 }
 
-const MAX_PAGES = parseInt(process.env.MAX_PAGES || '25', 10);
-const MAX_DEPTH = parseInt(process.env.MAX_DEPTH || '3', 10);
+const MAX_PAGES = parseInt(process.env.MAX_PAGES || '100', 10);
+const MAX_DEPTH = parseInt(process.env.MAX_DEPTH || '5', 10);
 const USER_AGENT = 'PatLLC-SiteScraper/1.0 (+https://patllc.example/scraper)';
 
 const NOW = new Date();
@@ -117,7 +125,8 @@ function extract(html, url) {
 
   // Emails
   const emailsFromMailto = [...html.matchAll(/href=["']mailto:([^"'?]+)/gi)].map((m) => m[1]);
-  const emailsVisible = [...bodyText.matchAll(/[\w.+-]+@[\w-]+\.[\w.-]+/g)].map((m) => m[0]);
+  // Word boundary at the end + restrict TLD to alphabetic so we don't grab `.comLoading`.
+  const emailsVisible = [...bodyText.matchAll(/[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[a-z]{2,24}\b/gi)].map((m) => m[0]);
   const emails = [...new Set([...emailsFromMailto, ...emailsVisible])];
 
   // Address heuristic: looks for "###  Street, City, ST ZIP" patterns
@@ -306,6 +315,10 @@ async function main() {
 
   log('');
   log(`=== Done ===`);
+  if (pages.length >= MAX_PAGES) {
+    log(`! MAX_PAGES (${MAX_PAGES}) reached. There may be more pages on the site.`);
+    log(`  To capture more: MAX_PAGES=${MAX_PAGES * 2} MAX_DEPTH=${MAX_DEPTH + 2} URL=${SEED} npm run scrape`);
+  }
   log(`Pages scraped: ${summary.pagesOk}/${summary.pagesAttempted}`);
   log(`Phones: ${summary.aggregatedPhones.join(', ') || '(none)'}`);
   log(`Emails: ${summary.aggregatedEmails.join(', ') || '(none)'}`);

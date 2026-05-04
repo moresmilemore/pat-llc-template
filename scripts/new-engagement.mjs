@@ -17,16 +17,41 @@
 //   - src/data/pat-llc.ts (Pat's master template; only Pat edits)
 //   - src/data/services.ts (filled later by the orchestrator from research/)
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const rl = createInterface({ input, output });
+// Non-interactive mode: ENGAGEMENT_JSON=<path> to a JSON file with the answers.
+// Useful for scripted dispatch (e.g. CRM trigger) and for end-to-end testing.
+//
+// JSON shape (all keys optional; missing keys fall back to defaults):
+// {
+//   "name": "Acme Plumbing",
+//   "slug": "acme-plumbing",
+//   "url": "https://acme.com",
+//   "industry": "Plumbing",
+//   "phone": "555-123-4567",
+//   "email": "hi@acme.com",
+//   "street": "123 Main", "city": "Springfield", "region": "IL", "postal": "62701",
+//   "hours": "Mon-Fri 8am-5pm",
+//   "serviceArea": "Greater Springfield, IL",
+//   "license": "PL-12345", "insurance": "Bonded + insured",
+//   "reviewCountTarget": "20", "gbpUrl": "", "reviewCount": "0", "averageRating": "0"
+// }
+
+const JSON_PATH = process.env.ENGAGEMENT_JSON;
+const PRESEED = JSON_PATH && existsSync(JSON_PATH) ? JSON.parse(readFileSync(JSON_PATH, 'utf8')) : null;
+
+const rl = PRESEED ? null : createInterface({ input, output });
 
 function log(msg)  { process.stdout.write(`[new-engagement] ${msg}\n`); }
 function warn(msg) { process.stderr.write(`[new-engagement] WARN: ${msg}\n`); }
 
-async function ask(label, fallback = '') {
+async function ask(label, fallback = '', key = null) {
+  if (PRESEED) {
+    if (key && PRESEED[key] !== undefined) return String(PRESEED[key]);
+    return fallback;
+  }
   const suffix = fallback ? ` [${fallback}]` : '';
   const v = (await rl.question(`  ${label}${suffix}: `)).trim();
   return v || fallback;
@@ -53,29 +78,29 @@ async function main() {
   log('Pat LLC — new client engagement setup');
   log('Press Enter to accept defaults shown in [brackets].\n');
 
-  const name = await ask('Client business name (e.g. "Acme Plumbing")');
-  if (!name) { warn('Name is required.'); rl.close(); process.exit(2); }
+  const name = await ask('Client business name (e.g. "Acme Plumbing")', '', 'name');
+  if (!name) { warn('Name is required.'); rl?.close(); process.exit(2); }
 
-  const slug = await ask('Client slug (URL-safe identifier)', slugify(name));
-  const url = await ask('Existing site URL', 'https://example.com');
-  const industry = await ask('Industry (e.g. "Plumbing", "HVAC", "Roofing")');
-  const phoneRaw = await ask('Client phone number');
+  const slug = await ask('Client slug (URL-safe identifier)', slugify(name), 'slug');
+  const url = await ask('Existing site URL', 'https://example.com', 'url');
+  const industry = await ask('Industry (e.g. "Plumbing", "HVAC", "Roofing")', '', 'industry');
+  const phoneRaw = await ask('Client phone number', '', 'phone');
   const phone = normalizePhone(phoneRaw);
-  const email = await ask('Client email');
-  const street = await ask('Street address (optional)', '');
-  const city = await ask('City', '');
-  const region = await ask('State / Region (e.g. "IL")', '');
-  const postal = await ask('ZIP / Postal code', '');
-  const hours = await ask('Hours of operation', 'Mon–Fri 8am–5pm');
-  const serviceArea = await ask('Service area phrase (e.g. "Greater Springfield, IL")');
-  const license = await ask('License number (optional)', '');
-  const insurance = await ask('Insurance / bonding (optional)', '');
-  const reviewCountTarget = await ask('Review count TARGET for research harvest', '20');
-  const gbpUrl = await ask('Google Business Profile URL (optional)', '');
-  const reviewCount = await ask('Current review count (will be updated from research; enter 0 if unknown)', '0');
-  const averageRating = await ask('Current average rating (0 if unknown)', '0');
+  const email = await ask('Client email', '', 'email');
+  const street = await ask('Street address (optional)', '', 'street');
+  const city = await ask('City', '', 'city');
+  const region = await ask('State / Region (e.g. "IL")', '', 'region');
+  const postal = await ask('ZIP / Postal code', '', 'postal');
+  const hours = await ask('Hours of operation', 'Mon–Fri 8am–5pm', 'hours');
+  const serviceArea = await ask('Service area phrase (e.g. "Greater Springfield, IL")', '', 'serviceArea');
+  const license = await ask('License number (optional)', '', 'license');
+  const insurance = await ask('Insurance / bonding (optional)', '', 'insurance');
+  const reviewCountTarget = await ask('Review count TARGET for research harvest', '20', 'reviewCountTarget');
+  const gbpUrl = await ask('Google Business Profile URL (optional)', '', 'gbpUrl');
+  const reviewCount = await ask('Current review count (will be updated from research; enter 0 if unknown)', '0', 'reviewCount');
+  const averageRating = await ask('Current average rating (0 if unknown)', '0', 'averageRating');
 
-  rl.close();
+  rl?.close();
 
   // ---- Update src/data/client.ts ----
   const clientPath = 'src/data/client.ts';

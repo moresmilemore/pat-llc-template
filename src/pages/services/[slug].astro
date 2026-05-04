@@ -1,9 +1,9 @@
 ---
 // Per-service detail page. Generates one static page per entry in src/data/services.ts.
-// Slim hero band → trust strip → 3-section content body → related-services grid →
-// license/insurance block → cross-link to 3 other services.
+// Composition + body live in ServiceDetail; this file is just the route + getStaticPaths.
 
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import ServiceDetail from '../../components/ServiceDetail.astro';
 import { client } from '../../data/client';
 import { services, type Service } from '../../data/services';
 
@@ -24,173 +24,11 @@ const related: Service[] = service.related
   .map((slug) => services.find((s) => s.slug === slug))
   .filter((s): s is Service => Boolean(s))
   .slice(0, 3);
-
-const trustItems: Array<{ caption: string; value: string }> = [
-  { caption: 'Licensed', value: client.licenseNumber },
-  { caption: 'Insurance', value: client.insurance },
-  { caption: 'Service area', value: client.serviceArea },
-  { caption: 'Hours', value: client.hours },
-];
 ---
 
 <SiteLayout
   title={`${service.name} — ${client.name}`}
   description={service.shortDescription}
 >
-  <section class="service-hero">
-    <p class="service-hero__caption">{client.name.toUpperCase()} · SERVICES</p>
-    <h1>{service.name}</h1>
-    <p class="service-hero__short">{service.shortDescription}</p>
-    <div class="service-hero__cta-row">
-      <a href={`tel:${client.phoneTel}`} class="cta cta--primary">Call {client.phone}</a>
-      <a href={`sms:${client.phoneText}`} class="cta cta--ghost">Text us →</a>
-    </div>
-  </section>
-
-  <section class="trust-strip" aria-label="Credentials and coverage">
-    {trustItems.map((t) => (
-      <div class="trust-strip__item">
-        <span class="trust-strip__caption">{t.caption}</span>
-        <span class="trust-strip__value">{t.value}</span>
-      </div>
-    ))}
-  </section>
-
-  <section class="service-body">
-    <article>
-      <h2>What we do</h2>
-      <div class="service-body__copy" set:html={service.body}></div>
-    </article>
-  </section>
-
-  <section class="related">
-    <h2>Other services</h2>
-    <div class="related__grid">
-      {related.map((r) => (
-        <a href={`/services/${r.slug}`} class="related__card">
-          <h3>{r.name}</h3>
-          <p>{r.shortDescription}</p>
-          <span class="related__cta">View service →</span>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <section class="license-block">
-    <p class="license-block__caption">CREDENTIALS</p>
-    <p>
-      {client.name} is licensed (#{client.licenseNumber}) and {client.insurance.toLowerCase()}.
-      Serving {client.serviceArea}. {client.hours}.
-    </p>
-    <p>
-      Questions? <a href={`tel:${client.phoneTel}`}>{client.phone}</a> · <a href={`mailto:${client.email}`}>{client.email}</a>
-    </p>
-  </section>
+  <ServiceDetail service={service} related={related} />
 </SiteLayout>
-
-<style>
-  .service-hero {
-    padding: var(--space-12) var(--space-6) var(--space-8);
-    max-width: 880px;
-    margin: 0 auto;
-  }
-  .service-hero__caption {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    margin: 0 0 var(--space-3);
-  }
-  h1 { font-size: clamp(32px, 5vw, 52px); margin-bottom: var(--space-4); }
-  .service-hero__short { font-size: 18px; color: var(--ink-secondary); margin: 0 0 var(--space-6); }
-  .service-hero__cta-row { display: flex; gap: var(--space-3); flex-wrap: wrap; }
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    padding: 12px 20px;
-    border-radius: var(--radius-pill);
-    text-decoration: none;
-    font-weight: 500;
-    min-height: 44px;
-  }
-  .cta--primary { background: var(--primary); color: var(--surface); }
-  .cta--primary:hover { background: var(--primary-deep); color: var(--surface); }
-  .cta--ghost { background: transparent; color: var(--ink-primary); border: 1px solid var(--border-subtle); }
-  .cta--ghost:hover { background: var(--surface-warm); }
-
-  .trust-strip {
-    background: var(--surface-warm);
-    padding: var(--space-6);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--space-4);
-    border-top: 1px solid var(--border-subtle);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-  .trust-strip__item { display: flex; flex-direction: column; gap: 2px; }
-  .trust-strip__caption {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-  }
-  .trust-strip__value { font-size: 15px; color: var(--ink-primary); }
-
-  .service-body {
-    padding: var(--space-12) var(--space-6);
-    max-width: 720px;
-    margin: 0 auto;
-  }
-  .service-body h2 { font-size: 28px; margin-bottom: var(--space-4); }
-  .service-body__copy { font-size: 17px; color: var(--ink-primary); }
-  .service-body__copy :global(p) { margin: 0 0 var(--space-4); line-height: 1.6; }
-  .service-body__copy :global(h3) { font-size: 22px; margin: var(--space-8) 0 var(--space-3); }
-  .service-body__copy :global(ul) { padding-left: var(--space-6); margin: 0 0 var(--space-4); }
-
-  .related {
-    padding: var(--space-12) var(--space-6);
-    max-width: 1120px;
-    margin: 0 auto;
-  }
-  .related h2 { font-size: 26px; margin-bottom: var(--space-6); }
-  .related__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--space-4);
-  }
-  .related__card {
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    text-decoration: none;
-    color: var(--ink-primary);
-    transition: border-color var(--duration-fast) var(--easing), transform var(--duration-fast) var(--easing);
-  }
-  .related__card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-  .related__card h3 { font-size: 18px; margin-bottom: var(--space-2); }
-  .related__card p { color: var(--ink-secondary); font-size: 14px; margin: 0 0 var(--space-3); }
-  .related__cta { color: var(--accent); font-size: 14px; font-weight: 500; }
-
-  .license-block {
-    padding: var(--space-8) var(--space-6) var(--space-12);
-    max-width: 720px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .license-block__caption {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    margin: 0 0 var(--space-3);
-  }
-  .license-block p { color: var(--ink-secondary); margin: 0 0 var(--space-3); }
-  .license-block a { color: var(--ink-primary); }
-</style>

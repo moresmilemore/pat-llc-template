@@ -26,7 +26,7 @@ const reviewSchema = {
 ---
 
 <figure class="review-tile">
-  <div class="review-tile__rating" aria-label={`Rating: ${rating} out of 5`}>
+  <div class="review-tile__rating" role="img" aria-label={`Rating: ${rating} out of 5`}>
     {[1, 2, 3, 4, 5].map((i) => (
       <span class:list={['review-tile__star', i <= rating && 'review-tile__star--filled']} aria-hidden="true">★</span>
     ))}

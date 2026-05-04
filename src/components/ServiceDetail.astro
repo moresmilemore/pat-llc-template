@@ -1,0 +1,131 @@
+---
+// Per-service detail page composition. Renders the body of one service —
+// hero band, trust strip, structured body, related-services cross-link, contact CTA.
+// Used by services/[slug].astro for every service in src/data/services.ts.
+//
+// Per knowledge/seo.md: every service detail ships Service JSON-LD schema.
+
+import Hero from './Hero.astro';
+import TrustStrip from './TrustStrip.astro';
+import ServiceCard from './ServiceCard.astro';
+import ContactForm from './ContactForm.astro';
+import { client } from '../data/client';
+import type { Service } from '../data/services';
+
+interface Props {
+  service: Service;
+  related: Service[];
+}
+
+const { service, related } = Astro.props;
+
+const trustSignals = [
+  { label: 'Licensed', value: client.licenseNumber, icon: 'shield-check' },
+  { label: 'Insured', value: client.insurance, icon: 'umbrella' },
+  { label: 'Service area', value: client.serviceArea, icon: 'map-pin' },
+];
+
+// Service JSON-LD per knowledge/seo.md
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: service.name,
+  description: service.shortDescription,
+  provider: {
+    '@type': 'LocalBusiness',
+    name: client.name,
+    telephone: client.phoneTel,
+    email: client.email,
+    areaServed: client.serviceArea,
+  },
+  areaServed: client.serviceArea,
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+
+<Hero
+  variant="centered"
+  caption={`${client.name.toUpperCase()} · SERVICES`}
+  headline={service.name}
+  lede={service.shortDescription}
+  ctas={[
+    { label: `Call ${client.phone}`, href: `tel:${client.phoneTel}`, variant: 'primary' },
+    { label: 'Text us →', href: `sms:${client.phoneText}`, variant: 'ghost' },
+  ]}
+/>
+
+<TrustStrip signals={trustSignals} variant="full" />
+
+<section class="service-body">
+  <article>
+    <h2>What we do</h2>
+    <div class="service-body__copy" set:html={service.body} />
+  </article>
+</section>
+
+{related.length > 0 && (
+  <section class="related-services">
+    <h2 class="related-services__heading">Other services</h2>
+    <div class="related-services__grid">
+      {related.map((r) => (
+        <ServiceCard slug={r.slug} name={r.name} shortDescription={r.shortDescription} />
+      ))}
+    </div>
+  </section>
+)}
+
+<ContactForm
+  heading={`Ready to talk ${service.name.toLowerCase()}?`}
+  caption="GET IN TOUCH"
+  successMessage={`Thanks — ${client.name} will reach out.`}
+/>
+
+<style>
+  .service-body {
+    padding: var(--space-12) var(--space-6);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .service-body h2 {
+    font-size: clamp(24px, 3vw, 32px);
+    margin: 0 0 var(--space-4);
+  }
+  .service-body__copy {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink-primary);
+  }
+  .service-body__copy :global(p) { margin: 0 0 var(--space-4); }
+  .service-body__copy :global(h3) {
+    font-size: 22px;
+    margin: var(--space-8) 0 var(--space-3);
+  }
+  .service-body__copy :global(ul),
+  .service-body__copy :global(ol) {
+    padding-left: var(--space-6);
+    margin: 0 0 var(--space-4);
+  }
+  .service-body__copy :global(li) { margin-bottom: var(--space-1); }
+
+  .related-services {
+    padding: var(--space-12) var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .related-services__heading {
+    font-size: clamp(24px, 3vw, 32px);
+    margin: 0 0 var(--space-6);
+  }
+  .related-services__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 640px) {
+    .related-services__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .related-services__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

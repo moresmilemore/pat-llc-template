@@ -20,6 +20,7 @@
     "scrape": "node scripts/scrape-existing-site.mjs",
     "launch:check": "node scripts/launch-checklist.mjs",
     "new-engagement": "node scripts/new-engagement.mjs",
+    "new-direction": "node scripts/new-direction.mjs",
     "render-og": "node scripts/render-og.mjs"
   },
   "dependencies": {
