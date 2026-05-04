@@ -1,0 +1,196 @@
+---
+// Contact form. Resend (transactional email) + Cloudflare Turnstile (spam protection).
+// POSTs to /api/contact. Per knowledge/conversion.md: minimum-fields wins.
+// Default: name + phone + 1 free-text. Adds email if useEmail prop.
+
+interface Props {
+  useEmail?: boolean;       // default false — service trades convert better with phone-led
+  preferTextOver?: boolean; // when true, suggests text-message contact
+  heading?: string;
+  caption?: string;
+  successMessage?: string;
+}
+
+const {
+  useEmail = false,
+  preferTextOver = false,
+  heading = 'Tell us about the job',
+  caption,
+  successMessage = "Thanks — we'll be in touch shortly.",
+} = Astro.props;
+
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+---
+
+<section class="contact-form" aria-labelledby="contact-heading">
+  {caption && <p class="contact-form__caption">{caption}</p>}
+  <h2 id="contact-heading">{heading}</h2>
+
+  <form
+    class="contact-form__form"
+    method="post"
+    action="/api/contact"
+    data-success-message={successMessage}
+  >
+    <div class="contact-form__field">
+      <label for="cf-name">Your name</label>
+      <input id="cf-name" name="name" type="text" autocomplete="name" required minlength="2" />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="cf-phone">Phone</label>
+      <input
+        id="cf-phone"
+        name="phone"
+        type="tel"
+        autocomplete="tel"
+        inputmode="tel"
+        required
+        pattern="[0-9()+\-\s]{10,}"
+        aria-describedby="cf-phone-hint"
+      />
+      <span id="cf-phone-hint" class="contact-form__hint">
+        {preferTextOver ? 'Text-friendly number works best' : 'A good number to reach you'}
+      </span>
+    </div>
+
+    {useEmail && (
+      <div class="contact-form__field">
+        <label for="cf-email">Email (optional)</label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" />
+      </div>
+    )}
+
+    <div class="contact-form__field">
+      <label for="cf-message">What's going on?</label>
+      <textarea
+        id="cf-message"
+        name="message"
+        rows="4"
+        required
+        minlength="10"
+        placeholder="A few sentences is plenty"
+      ></textarea>
+    </div>
+
+    {turnstileSiteKey && (
+      <div class="cf-turnstile" data-sitekey={turnstileSiteKey}></div>
+    )}
+
+    <button class="contact-form__submit cta cta--primary" type="submit">
+      Send it
+    </button>
+
+    <div class="contact-form__status" role="status" aria-live="polite"></div>
+  </form>
+</section>
+
+{turnstileSiteKey && (
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+)}
+
+<script>
+  const form = document.querySelector('.contact-form__form') as HTMLFormElement | null;
+  const status = document.querySelector('.contact-form__status') as HTMLElement | null;
+  const successMessage = form?.dataset.successMessage ?? "Thanks — we'll be in touch shortly.";
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !status) return;
+    status.textContent = 'Sending...';
+    const data = new FormData(form);
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+      });
+      if (res.ok) {
+        status.textContent = successMessage;
+        status.classList.add('contact-form__status--ok');
+        form.reset();
+      } else {
+        const err = await res.text();
+        status.textContent = `Couldn't send — ${err || 'try again'}`;
+        status.classList.add('contact-form__status--err');
+      }
+    } catch {
+      status.textContent = "Couldn't send — check your connection and retry.";
+      status.classList.add('contact-form__status--err');
+    }
+  });
+</script>
+
+<style>
+  .contact-form {
+    padding: var(--space-12) var(--space-6);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .contact-form__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 var(--space-2);
+  }
+  .contact-form h2 {
+    font-size: clamp(24px, 3vw, 32px);
+    margin: 0 0 var(--space-6);
+  }
+  .contact-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .contact-form__field label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-primary);
+  }
+  .contact-form__field input,
+  .contact-form__field textarea {
+    padding: 12px 14px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 16px;
+    background: var(--surface);
+    color: var(--ink-primary);
+    min-height: 44px;
+    transition: border-color var(--duration-fast) var(--easing);
+  }
+  .contact-form__field textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  .contact-form__field input:focus,
+  .contact-form__field textarea:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-color: var(--accent);
+  }
+  .contact-form__hint {
+    font-size: 13px;
+    color: var(--ink-mute);
+  }
+  .contact-form__submit {
+    align-self: flex-start;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 16px;
+  }
+  .contact-form__status {
+    min-height: 20px;
+    font-size: 14px;
+    color: var(--ink-secondary);
+  }
+  .contact-form__status--ok { color: var(--success); }
+  .contact-form__status--err { color: var(--error); }
+</style>

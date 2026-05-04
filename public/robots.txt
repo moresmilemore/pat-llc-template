@@ -1,0 +1,12 @@
+# Pat LLC template — robots.txt
+#
+# Pre-launch state: pages also carry <meta name="robots" content="noindex" />
+# so this file allowing all is a safety net rather than a primary signal.
+#
+# At launch, the orchestrator (or Pat) removes the noindex meta. This robots.txt
+# stays as-is — search engines crawl freely, Sitemap below points them at the routes.
+
+User-agent: *
+Allow: /
+
+Sitemap: /sitemap-index.xml

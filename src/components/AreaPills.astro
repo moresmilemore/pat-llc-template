@@ -1,0 +1,49 @@
+---
+interface Props {
+  areas: string[];          // town/city names from research
+  heading?: string;
+  serviceArea?: string;     // overall service area phrase, e.g. "Greater Springfield, IL"
+}
+
+const { areas, heading = 'Service area', serviceArea } = Astro.props;
+---
+
+<section class="area-pills" aria-labelledby="areas-heading">
+  <header class="area-pills__header">
+    <h2 id="areas-heading">{heading}</h2>
+    {serviceArea && <p class="area-pills__sub">{serviceArea}</p>}
+  </header>
+  <ul class="area-pills__list">
+    {areas.map((a) => <li class="area-pills__pill">{a}</li>)}
+  </ul>
+</section>
+
+<style>
+  .area-pills {
+    padding: var(--space-12) var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .area-pills__header { display: flex; flex-direction: column; gap: var(--space-1); margin-bottom: var(--space-6); }
+  .area-pills__header h2 {
+    font-size: clamp(24px, 3vw, 32px);
+    margin: 0;
+  }
+  .area-pills__sub { color: var(--ink-secondary); margin: 0; font-size: 16px; }
+  .area-pills__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .area-pills__pill {
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--surface-warm);
+    color: var(--ink-secondary);
+    font-size: 14px;
+    border: 1px solid var(--border-subtle);
+  }
+</style>

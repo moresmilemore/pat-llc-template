@@ -117,9 +117,16 @@ const faq: Array<{ q: string; a: string }> = [
   },
 ];
 
+// Phase 4: REWRITE these intros with specifics from research/.
+// Required references:
+//   - dominant archetype + 1-2 axis scores from research/current-site-vibe.md
+//   - the differentiation claim from research/competitive-teardown.md
+//   - one verbatim or near-verbatim phrase from research/current-site-strengths.md or reviews
+// Generic boilerplate ("we help small businesses...") is a CRITICAL anti-pattern violation.
+// Drop the [VIBE_TBD] tokens below if Phase 0.5 produced a vibe artifact; never ship them.
 const introParas: string[] = [
-  `Hi ${client.name} — thanks for letting me dig into your current site. The audit on the previous tab lays out exactly what I found.`,
-  `This proposal is my recommendation for what a modern rebuild should look like. Three tiers below, each with locked pricing — no surprise hourly bills, no agency overhead. Most clients pick Tier B (Site + Care). If you're starting an ad campaign or want active SEO, Tier C is the call.`,
+  `Hi ${client.name} — thanks for letting me dig into your current site. The audit on the previous tab lays out what I found, but here's the short version: [VIBE_TBD — one sentence naming the dominant archetype + what's working that the modernization will preserve, e.g. "Your site reads as the kind of family-run trade business that earns trust through plain talk and the owner picking up the phone — that part isn't broken, it's the execution around it that needs to come forward to 2026."]`,
+  `This proposal is my recommendation for the rebuild. [VIBE_TBD — one sentence on the differentiation claim from competitive teardown, e.g. "Your competitors are shipping the same three-feature card row I've seen on twenty other roofing sites this month — the rebuild leans into the things you actually do differently."] Three tiers below, each with locked pricing — no surprise hourly bills, no agency overhead. Most clients pick Tier B (Site + Care). If you're starting an ad campaign or want active SEO, Tier C is the call.`,
   `If anything below isn't right for your business, tell me and I'll revise. Otherwise, the deposit links go straight to Stripe and the schedule link goes to my Calendly.`,
 ];
 ---

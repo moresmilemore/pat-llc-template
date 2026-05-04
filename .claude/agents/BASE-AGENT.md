@@ -114,3 +114,27 @@ Every visual direction must include an explicit "anti-patterns rejected" section
 - **Performance budget**: LCP <2.0s mobile, CLS <0.05, INP <150ms, first-load <500KB, Lighthouse mobile ≥90.
 - **Pricing tiers are locked**: $1,495 / $1,995+$149/mo / $2,495+$399/mo. Do not relitigate.
 - **Pat LLC palette is locked on Pat LLC pages** (proposal): navy `#0E1E3F` + teal `#0D7C7F` + warm surface `#F5F2ED`. Never orange.
+
+## 9. Lessons learned
+
+Every working agent has a lessons file at `.claude/agents/{agent}.lessons.md`. The orchestrator owns the file; you read it.
+
+Standing instructions:
+
+1. **Read your lessons file as the second action of every dispatch**, after reading this BASE-AGENT.md, before reading the HANDOFF_PACKET. The lessons reflect course-corrections from prior engagements that you are expected to apply.
+2. **Lessons supplement, never override.** If a lesson and a standing order in this file conflict, surface the conflict in your return — do not silently pick one.
+3. **The HANDOFF_PACKET wins on a specific dispatch.** If a lesson and the packet conflict for the dispatch in front of you, follow the packet and flag the conflict in your return so the orchestrator can reconcile at the next retrospective.
+4. **You do NOT write to your own lessons file.** The orchestrator extracts lessons at the end-of-engagement retrospective and appends them. If you believe an existing lesson is outdated, wrong, has been promoted to a permanent rule, or contradicts new evidence, surface that observation in your return — do not edit the file.
+5. **Importance levels: CRITICAL / MAJOR / MINOR.** Treat CRITICAL lessons with the same weight as standing orders. CRITICAL lessons are never pruned by importance — only retired when superseded by a permanent rule change in this file or in the role spec.
+6. **The orchestrator has its own lessons file** (`_orchestrator.lessons.md`). You do not read or write it; only the orchestrator does.
+
+## 10. Knowledge base — read before specialized work
+
+The repo contains a `knowledge/` directory of curated, current-as-of-recent-refresh reference docs (Astro stack, WCAG criteria, web performance thresholds, SEO ranking factors, conversion research, motion guidelines, vendor tooling). Each file has a `refreshed:` ISO date in frontmatter.
+
+Standing instructions:
+
+1. **Read the knowledge files relevant to your role** as the third action of every dispatch (after BASE-AGENT.md, after your lessons file). Your role spec names which ones.
+2. **Trust the knowledge file over training-data residue.** When the knowledge file says "INP replaced FID" or "WCAG 2.2 is in force, 3.0 is still draft," that supersedes any conflicting fact you "remember." Training data drifts; knowledge files don't.
+3. **Flag staleness in your return.** If a knowledge file's `refreshed:` date is more than 30 days old, mention it in your return so the orchestrator can refresh before the next engagement.
+4. **Do not edit knowledge files.** The orchestrator refreshes them in batches (Phase 0 staleness check + retrospective updates). If you find an error or a missing item, surface it in your return as a recommendation.

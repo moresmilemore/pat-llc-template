@@ -1,0 +1,77 @@
+---
+// Trust signals strip — license, insurance, BBB, years-in-business, etc.
+// Per knowledge/conversion.md: visible verified credentials beat unverifiable badges.
+
+interface Signal {
+  label: string;       // e.g. "Licensed", "Insured", "BBB Accredited", "Since 1947"
+  value?: string;      // e.g. license number "PL-12345"
+  icon?: string;       // lucide icon name
+}
+
+interface Props {
+  signals: Signal[];
+  variant?: 'compact' | 'full';
+}
+
+const { signals, variant = 'full' } = Astro.props;
+import { Icon } from 'astro-icon/components';
+---
+
+<section class:list={['trust-strip', `trust-strip--${variant}`]} aria-label="Trust signals">
+  <ul class="trust-strip__list">
+    {signals.map((s) => (
+      <li class="trust-strip__item">
+        {s.icon && (
+          <span class="trust-strip__icon" aria-hidden="true">
+            <Icon name={`lucide:${s.icon}`} />
+          </span>
+        )}
+        <span class="trust-strip__label">{s.label}</span>
+        {s.value && <span class="trust-strip__value">{s.value}</span>}
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .trust-strip {
+    padding: var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .trust-strip__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    justify-content: center;
+    align-items: center;
+  }
+  .trust-strip__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--ink-secondary);
+    font-size: 14px;
+  }
+  .trust-strip__icon {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+    display: inline-flex;
+  }
+  .trust-strip__icon :global(svg) { width: 100%; height: 100%; }
+  .trust-strip__label { font-weight: 500; }
+  .trust-strip__value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-mute);
+    margin-left: 4px;
+  }
+
+  .trust-strip--compact .trust-strip__list { gap: var(--space-4); }
+</style>

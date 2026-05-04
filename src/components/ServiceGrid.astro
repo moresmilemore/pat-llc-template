@@ -1,0 +1,56 @@
+---
+import ServiceCard from './ServiceCard.astro';
+import type { Service } from '../data/services';
+
+interface Props {
+  services: Service[];
+  heading?: string;
+  caption?: string;
+}
+
+const { services, heading = 'Services', caption } = Astro.props;
+---
+
+<section class="services" aria-labelledby="services-heading">
+  {caption && <p class="services__caption">{caption}</p>}
+  <h2 id="services-heading" class="services__heading">{heading}</h2>
+  <div class="services__grid" role="list">
+    {services.map((s) => (
+      <div role="listitem">
+        <ServiceCard slug={s.slug} name={s.name} shortDescription={s.shortDescription} />
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .services {
+    padding: var(--space-16) var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .services__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 var(--space-2);
+  }
+  .services__heading {
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 0 0 var(--space-8);
+    text-wrap: balance;
+  }
+  .services__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 640px) {
+    .services__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .services__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

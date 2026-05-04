@@ -47,6 +47,14 @@ Most contractor sites have two; ecommerce or B2B may differ. Edit per client.
 - Less concerned with reviews, more concerned with availability
 - Decides on: speed of response, willingness to come out today
 
+## 3.5 Vibe / archetype (filled by researcher Phase 0.5)
+
+The vibe-extraction skill produces `research/current-site-vibe.md` with the dominant archetype, axis scores, and preserve/modernize/reject lists. Mirror the dominant archetype here for quick reference during design — actual axis scores live in the research artifact:
+
+- **Dominant archetype:** [CLIENT_TBD — one of: warm-trad / polished-pro / neighborhood / engineered / boutique / civic]
+- **Blend (if any):** [CLIENT_TBD]
+- **Vibe-fit gate for direction proposals:** all three Phase 2 directions must score ≥75 vibe-fit unless the operator explicitly authorizes an adjacent-archetype proposal
+
 ## 4. Anti-goals
 
 What this site must NOT look like:

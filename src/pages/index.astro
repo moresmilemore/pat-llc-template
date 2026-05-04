@@ -1,37 +1,95 @@
 ---
-// Homepage stub. Phase 4 of the engagement replaces this with the
-// chosen visual direction's full hero + services grid + reviews + footer.
-// This stub exists so `npm run build` succeeds before the per-client build.
+// Homepage. Composes Pat LLC production components with research-derived content.
+// Phase 4 fine-tunes per the chosen direction (composition, copy, image selection).
+// Components used: Hero, ServiceGrid, ReviewsBlock, ProcessSteps, AreaPills,
+// TrustStrip, ContactForm. All ship JSON-LD + a11y + reduced-motion + 44px tap.
 
 import SiteLayout from '../layouts/SiteLayout.astro';
+import Hero from '../components/Hero.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import ReviewsBlock from '../components/ReviewsBlock.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import AreaPills from '../components/AreaPills.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import ContactForm from '../components/ContactForm.astro';
 import { client } from '../data/client';
+import { services } from '../data/services';
+
+// Phase 4 fills these arrays from research/. Template ships with [CLIENT_TBD]
+// markers so an unfilled engagement loudly fails the self-assessment battery
+// rather than shipping placeholder content silently.
+
+const trustSignals = [
+  { label: 'Licensed', value: client.licenseNumber, icon: 'shield-check' },
+  { label: 'Insured', value: client.insurance, icon: 'umbrella' },
+  // Phase 4: append BBB / years-in-business / Google rating from research
+];
+
+const processSteps = [
+  { number: 1, title: 'Call or text', description: 'Reach the owner, not a call center.' },
+  { number: 2, title: 'On-site quote', description: 'Free, with a written estimate before any work.' },
+  { number: 3, title: 'Scheduled job', description: 'Show-up window narrowed to the half-day.' },
+  { number: 4, title: 'Done right', description: 'Workmanship guarantee on every job.' },
+  // Phase 4: replace with real process from research/current-content-inventory.md if richer
+];
+
+const towns = [
+  // Phase 4: pull from PROJECT_BRIEF.md service area + competitive teardown
+  '[CLIENT_TBD — town 1]',
+  '[CLIENT_TBD — town 2]',
+  '[CLIENT_TBD — town 3]',
+];
+
+const reviewsForHomepage = [
+  // Phase 4: paste exactly 3 verbatim reviews from research/reputation-harvest.md
+  // Verbatim only — never paraphrased. See knowledge/conversion.md.
+  // Removing this comment block before launch is part of QA Mode 2.
+];
 ---
 
-<SiteLayout title={`${client.name} — Site Preview`} description="Modernized site preview built by Pat LLC.">
-  <section class="hero">
-    <p class="hero__caption">SITE PREVIEW · PHASE 4 BUILD TARGET</p>
-    <h1>{client.name}</h1>
-    <p class="hero__lede">
-      This homepage is a placeholder. The Phase 4 build replaces it with the chosen visual direction's hero composition,
-      services grid, reviews, and footer. Run the Ultra-Prompt in `KICKOFF_PROMPT.md` to begin.
-    </p>
-    <div class="hero__cta-row">
-      <a href={`tel:${client.phoneTel}`} class="cta cta--primary">Call {client.phone}</a>
-      <a href="/audit" class="cta cta--ghost">See the audit →</a>
-    </div>
-  </section>
+<SiteLayout
+  title={`${client.name} — ${client.serviceArea}`}
+  description={`${client.industry} services in ${client.serviceArea}. ${client.name}.`}
+>
+  <Hero
+    variant="split"
+    caption={client.industry?.toUpperCase()}
+    headline={`${client.name}`}
+    lede="[CLIENT_TBD — Phase 4: replace with one-sentence claim from research/current-site-strengths.md preserve list]"
+    ctas={[
+      { label: `Call ${client.phone}`, href: `tel:${client.phoneTel}`, variant: 'primary' },
+      { label: 'See the audit →', href: '/audit', variant: 'ghost' },
+    ]}
+  />
 
-  <section class="phase4-checklist">
-    <h2>What goes here at Phase 4</h2>
-    <ul>
-      <li>Hero composition matching <code>design/04-direction-{`{`}A|B|C{`}`}.md</code></li>
-      <li>Services grid (3-col desktop / 2-col tablet / 1-col mobile) sourced from <code>src/data/services.ts</code></li>
-      <li>Three verbatim reviews from <code>research/reputation-harvest.md</code> with attribution</li>
-      <li>Real-work + brands gallery (mix of authentic client photos + labeled manufacturer shots)</li>
-      <li>4-step process</li>
-      <li>Service-area pills</li>
-    </ul>
-  </section>
+  <TrustStrip signals={trustSignals} variant="full" />
+
+  <ServiceGrid
+    services={services}
+    heading="Services"
+    caption="WHAT WE DO"
+  />
+
+  <ProcessSteps steps={processSteps} heading="How we work" caption="PROCESS" />
+
+  {reviewsForHomepage.length === 3 && (
+    <ReviewsBlock
+      reviews={reviewsForHomepage as any}
+      heading="What customers say"
+      caption="REVIEWS"
+      reviewSourceUrl={client.reviewSourceUrl}
+      reviewCount={client.reviewCount}
+      averageRating={client.averageRating}
+    />
+  )}
+
+  <AreaPills areas={towns} serviceArea={client.serviceArea} heading="Service area" />
+
+  <ContactForm
+    heading="Tell us about the job"
+    caption="GET IN TOUCH"
+    successMessage={`Thanks — ${client.name} will be in touch shortly.`}
+  />
 </SiteLayout>
 
 <style>

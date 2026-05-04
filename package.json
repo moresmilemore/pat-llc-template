@@ -8,15 +8,34 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "postinstall": "node scripts/setup-playwright.mjs",
+    "setup:deps": "playwright install-deps chromium",
+    "qa:smoke": "playwright test --project=smoke",
+    "qa:lighthouse": "lighthouse $URL --output=json --output=html --output-path=./qa/lighthouse-report --chrome-flags='--headless=new --no-sandbox' --quiet",
+    "qa:a11y": "axe $URL --save qa/axe-report.json --exit",
+    "qa:screenshot": "playwright screenshot --browser=chromium --viewport-size=375,667 --full-page $URL qa/screenshots/screenshot.png",
+    "knowledge:check": "node scripts/check-knowledge-freshness.mjs",
+    "self-assessment": "node scripts/self-assessment.mjs",
+    "scrape": "node scripts/scrape-existing-site.mjs",
+    "launch:check": "node scripts/launch-checklist.mjs",
+    "new-engagement": "node scripts/new-engagement.mjs",
+    "render-og": "node scripts/render-og.mjs"
   },
   "dependencies": {
-    "astro": "^5.0.0",
-    "astro-icon": "^1.1.5",
-    "@iconify-json/lucide": "^1.2.0"
+    "@astrojs/sitemap": "^3.2.0",
+    "@astrojs/vercel": "^10.0.6",
+    "@iconify-json/lucide": "^1.2.0",
+    "astro": "^6.2.1",
+    "astro-icon": "^1.1.5"
   },
   "devDependencies": {
+    "@axe-core/cli": "^4.10.0",
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.49.0",
     "@types/node": "^22.0.0",
+    "lighthouse": "^12.2.0",
+    "playwright": "^1.49.0",
     "typescript": "^5.6.0"
   },
   "engines": {

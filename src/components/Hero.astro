@@ -1,0 +1,178 @@
+---
+// Hero composition. Three variants tied to vibe-extraction archetypes:
+//   - 'split'      — content-left, photo-right asymmetric (polished-pro, engineered)
+//   - 'centered'   — type-led centered hero with photo below (warm-trad, civic)
+//   - 'photo-led'  — full-bleed photo with overlay content (boutique, neighborhood)
+//
+// Phase 4 picks the variant from design/06-direction-decision.md.
+// All variants honor reduced-motion + ship LCP-eligible images (priority hint).
+
+interface CTA {
+  label: string;
+  href: string;
+  variant?: 'primary' | 'ghost';
+}
+
+interface Props {
+  variant?: 'split' | 'centered' | 'photo-led';
+  caption?: string;            // small mono-set caption above headline
+  headline: string;            // the H1; preserve verbatim from research/current-site-strengths.md when possible
+  lede?: string;               // 1-2 sentence supporting claim
+  ctas?: CTA[];                // 1-3 CTAs; primary first
+  image?: { src: string; alt: string; width: number; height: number };
+}
+
+const {
+  variant = 'split',
+  caption,
+  headline,
+  lede,
+  ctas = [],
+  image,
+} = Astro.props;
+---
+
+<section class:list={['hero', `hero--${variant}`]}>
+  <div class="hero__inner">
+    {caption && <p class="hero__caption">{caption}</p>}
+    <h1 class="hero__headline">{headline}</h1>
+    {lede && <p class="hero__lede">{lede}</p>}
+    {ctas.length > 0 && (
+      <div class="hero__ctas">
+        {ctas.map((cta) => (
+          <a
+            href={cta.href}
+            class:list={['cta', cta.variant === 'ghost' ? 'cta--ghost' : 'cta--primary']}
+          >{cta.label}</a>
+        ))}
+      </div>
+    )}
+  </div>
+
+  {image && (
+    <div class="hero__image-wrap">
+      <img
+        src={image.src}
+        alt={image.alt}
+        width={image.width}
+        height={image.height}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </div>
+  )}
+</section>
+
+<style>
+  .hero {
+    padding: var(--space-12) var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero__inner { display: flex; flex-direction: column; gap: var(--space-4); }
+
+  .hero__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0;
+  }
+  .hero__headline {
+    font-size: clamp(36px, 6vw, 64px);
+    line-height: 1.05;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .hero__lede {
+    font-size: clamp(17px, 2vw, 20px);
+    color: var(--ink-secondary);
+    max-width: 60ch;
+    margin: 0;
+    line-height: 1.45;
+  }
+  .hero__ctas {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-top: var(--space-2);
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 14px 22px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    font-weight: 500;
+    min-height: 44px;
+    transition: background var(--duration-fast) var(--easing), color var(--duration-fast) var(--easing), transform 100ms var(--easing);
+  }
+  .cta:active { transform: scale(0.97); }
+  .cta--primary { background: var(--primary); color: var(--surface); }
+  .cta--primary:hover { background: var(--primary-deep); color: var(--surface); }
+  .cta--ghost {
+    background: transparent;
+    color: var(--ink-primary);
+    border: 1px solid var(--border-subtle);
+  }
+  .cta--ghost:hover { background: var(--surface-warm); }
+
+  .hero__image-wrap img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+  }
+
+  /* Variant: split — content left, image right on desktop; stacked on mobile */
+  .hero--split { display: grid; grid-template-columns: 1fr; gap: var(--space-8); }
+  @media (min-width: 768px) {
+    .hero--split { grid-template-columns: 1.1fr 1fr; align-items: center; gap: var(--space-12); }
+  }
+
+  /* Variant: centered — content centered, image below */
+  .hero--centered { text-align: center; }
+  .hero--centered .hero__inner { align-items: center; }
+  .hero--centered .hero__lede { margin-left: auto; margin-right: auto; }
+  .hero--centered .hero__ctas { justify-content: center; }
+  .hero--centered .hero__image-wrap { margin-top: var(--space-8); }
+
+  /* Variant: photo-led — image as background with content overlaid */
+  .hero--photo-led {
+    position: relative;
+    padding: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero--photo-led .hero__image-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .hero--photo-led .hero__image-wrap img {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+  .hero--photo-led::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.55) 100%);
+    z-index: -1;
+  }
+  .hero--photo-led .hero__inner {
+    color: var(--surface);
+    padding: var(--space-16) var(--space-8);
+    min-height: 480px;
+    justify-content: flex-end;
+  }
+  .hero--photo-led .hero__headline,
+  .hero--photo-led .hero__lede,
+  .hero--photo-led .hero__caption {
+    color: var(--surface);
+  }
+</style>

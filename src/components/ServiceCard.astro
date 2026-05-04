@@ -1,0 +1,80 @@
+---
+interface Props {
+  slug: string;
+  name: string;
+  shortDescription: string;
+  href?: string;
+  icon?: string;       // lucide icon name (optional)
+}
+
+const { slug, name, shortDescription, href, icon } = Astro.props;
+const link = href ?? `/services/${slug}`;
+import { Icon } from 'astro-icon/components';
+---
+
+<a class="service-card" href={link} aria-label={`Learn more about ${name}`}>
+  {icon && (
+    <span class="service-card__icon" aria-hidden="true">
+      <Icon name={`lucide:${icon}`} />
+    </span>
+  )}
+  <h3 class="service-card__name">{name}</h3>
+  <p class="service-card__desc">{shortDescription}</p>
+  <span class="service-card__cta" aria-hidden="true">Learn more →</span>
+</a>
+
+<style>
+  .service-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--duration-fast) var(--easing), border-color var(--duration-fast) var(--easing), transform 200ms var(--easing);
+    min-height: 180px;
+  }
+  .service-card:hover {
+    background: var(--surface-warm);
+    border-color: var(--ink-mute);
+  }
+  .service-card:active { transform: scale(0.98); }
+
+  .service-card__icon {
+    width: 28px;
+    height: 28px;
+    color: var(--accent);
+    display: inline-flex;
+  }
+  .service-card__icon :global(svg) { width: 100%; height: 100%; }
+
+  .service-card__name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .service-card__desc {
+    color: var(--ink-secondary);
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0;
+    flex-grow: 1;
+  }
+  .service-card__cta {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-top: auto;
+  }
+  .service-card:hover .service-card__cta { color: var(--accent-deep); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .service-card { transition: none; }
+    .service-card:active { transform: none; }
+  }
+</style>

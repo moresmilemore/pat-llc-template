@@ -1,0 +1,92 @@
+---
+// Verbatim review tile. Per BASE-AGENT.md and qa.md content rules:
+// review text MUST be verbatim from research/reputation-harvest.md.
+// Never paraphrase. Schema.org Review markup ships automatically.
+
+interface Props {
+  text: string;             // verbatim review text
+  rating: 1 | 2 | 3 | 4 | 5;
+  author: string;           // first name + last initial if anonymized
+  date: string;             // ISO yyyy-mm-dd or display string
+  platform: 'Google' | 'Yelp' | 'Facebook' | 'BBB' | 'Other';
+  platformUrl?: string;
+}
+
+const { text, rating, author, date, platform, platformUrl } = Astro.props;
+
+const reviewSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Review',
+  reviewRating: { '@type': 'Rating', ratingValue: rating, bestRating: 5 },
+  author: { '@type': 'Person', name: author },
+  datePublished: date,
+  reviewBody: text,
+  publisher: { '@type': 'Organization', name: platform },
+};
+---
+
+<figure class="review-tile">
+  <div class="review-tile__rating" aria-label={`Rating: ${rating} out of 5`}>
+    {[1, 2, 3, 4, 5].map((i) => (
+      <span class:list={['review-tile__star', i <= rating && 'review-tile__star--filled']} aria-hidden="true">★</span>
+    ))}
+  </div>
+  <blockquote class="review-tile__quote">
+    <p>{text}</p>
+  </blockquote>
+  <figcaption class="review-tile__attr">
+    <span class="review-tile__author">{author}</span>
+    <span class="review-tile__sep" aria-hidden="true">·</span>
+    {platformUrl ? (
+      <a href={platformUrl} class="review-tile__platform" rel="noopener noreferrer">{platform}</a>
+    ) : (
+      <span class="review-tile__platform">{platform}</span>
+    )}
+    <span class="review-tile__sep" aria-hidden="true">·</span>
+    <time class="review-tile__date" datetime={date}>{date}</time>
+  </figcaption>
+  <script type="application/ld+json" set:html={JSON.stringify(reviewSchema)} />
+</figure>
+
+<style>
+  .review-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    margin: 0;
+  }
+  .review-tile__rating {
+    display: inline-flex;
+    gap: 2px;
+    color: var(--ink-mute);
+    font-size: 18px;
+  }
+  .review-tile__star--filled { color: #D4A017; }
+  .review-tile__quote {
+    margin: 0;
+    color: var(--ink-primary);
+  }
+  .review-tile__quote p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .review-tile__quote p::before { content: '"'; }
+  .review-tile__quote p::after { content: '"'; }
+  .review-tile__attr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    color: var(--ink-mute);
+    font-size: 13px;
+  }
+  .review-tile__author { font-weight: 500; color: var(--ink-secondary); }
+  .review-tile__platform { color: var(--ink-mute); text-decoration: none; }
+  .review-tile__platform:hover { color: var(--accent); text-decoration: underline; }
+  .review-tile__sep { opacity: 0.5; }
+</style>

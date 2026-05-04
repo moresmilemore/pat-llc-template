@@ -94,12 +94,35 @@ End-to-end as a prospect. On both mobile (375×667) and desktop (1280×800):
 
 Time budget: 30-45 minutes.
 
+## Runtime tooling (pre-installed via `npm install`)
+
+The template ships with these tools wired up via `package.json`. After `npm install`, all are available — Playwright browsers auto-install via the `postinstall` script. If browser install was skipped, run `npx playwright install chromium` manually.
+
+| Tool | Purpose | Command |
+|---|---|---|
+| Playwright | Headless browser, smoke + mobile + a11y test runner | `npx playwright test --project=smoke` (or `mobile`, `a11y`) |
+| Playwright (CLI) | Ad-hoc screenshot capture | `npx playwright screenshot --browser=chromium --viewport-size=375,667 --full-page <url> qa/screenshots/<name>.png` |
+| Lighthouse | Performance + a11y + SEO scoring | `URL=<url> npm run qa:lighthouse` (writes to `qa/lighthouse-report.json` + `.html`) |
+| @axe-core/cli | Standalone WCAG scan | `URL=<url> npm run qa:a11y` (writes to `qa/axe-report.json`) |
+| @axe-core/playwright | In-test WCAG scanning | `import AxeBuilder from '@axe-core/playwright'` (see `qa/tests/homepage.a11y.spec.ts`) |
+
+Pre-built test specs live in `qa/tests/`:
+- `*.smoke.spec.ts` — route 200s, banner, nav, footer
+- `*.mobile.spec.ts` — iPhone 13 viewport, tap targets, tel: link
+- `*.a11y.spec.ts` — WCAG 2.1 AA scan via axe-core
+
+To run against a deployed preview URL instead of localhost:
+```
+PLAYWRIGHT_BASE_URL=https://preview.vercel.app npx playwright test
+```
+
 ## Runtime evidence (mandatory)
 
 Every finding includes one or more:
 - Screenshot saved to `qa/screenshots/{mode}/{finding-id}.png`
-- Lighthouse JSON saved to `qa/lighthouse-{timestamp}.json`
+- Lighthouse JSON saved to `qa/lighthouse-{timestamp}.json` (or HTML report at `lighthouse-report.html`)
 - axe report saved to `qa/axe-{timestamp}.json`
+- Playwright trace / video at `qa/playwright-output/` on failures
 - Console output captured to `qa/console-{timestamp}.log`
 - HTTP response codes for every route in `qa/routes-{timestamp}.txt`
 

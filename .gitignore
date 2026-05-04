@@ -27,5 +27,15 @@ secrets/
 # local QA artifacts
 qa/screenshots/
 qa/lighthouse-*.json
+qa/lighthouse-report.*
 qa/axe-*.json
+qa/axe-report.json
 qa/console-*.log
+qa/playwright-output/
+qa/playwright-report/
+qa/routes-*.txt
+test-results/
+
+# retrospectives are committed at the per-client repo level (not gitignored) — they hold lesson updates
+# .claude/agents/*.lessons.md are committed
+# qa/tests/*.spec.ts ARE committed (the wired test specs ship with the template)
